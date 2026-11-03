@@ -16,13 +16,17 @@ the result from this is a matrix with dimension [query length in tokens / model 
 ```
 ## Multi Headed Attentions
 depending on how many heads we define, or the manufacturer of the model decide to use, that number is then used to divide the embedded matrix into that number let us assume we have 4 header,
-so a matrix of shape [100 / 512] will give us 8 different matrices of shape [100 / 128]. this way we can apply self attention from 4 heads and later concatenate all 4 into a single one with shape[100 / 512]
+so a matrix of shape [100 / 512] will give us 8 different matrices of shape [100 / 128].
+this way we can apply self attention from 4 heads and later concatenate all 4 into a single one with shape[100 / 512].
+however there is a good balance between too many heads and too little heads, this golden ration is that each head will have between 64 and 128 dimensions, each head will take a sequence and apply its own self attention to it.
+so the way this works is we get the result of the [embedding](#embedding) and multiply it with the matrices representing the key query and the value.
+we get 3 different matrices with shape of [model dimensions / len of query] we then divide each matrix on the head count and apply [self attention](#self-attention)
 ## Add/Normalize
 ## Feed Forward
 ## Output
 
-# Mechanism
-the way it works is every token get 3 embedding [key](#Key), [value](#Value), [query](#Query).
+# Self Attention
+using the key query and value we then apply a simple formula, we multiply the query with the key of every other token we then get a single vector size of len of the query (the token count).
 
 ### Positional Embedding
 The positional embedding of all tokens in the vocab is made during the boot up of the model.
@@ -36,3 +40,11 @@ so we loop for i from 0 to dimension of model:
 if i is even  we do PE(pos, 2i) = cos(pos / 10000*(2i / d-model))
 if i is odd we do PE(pos, 2i + 1) = sin(pos / 10000*(2i / d-model))
 where pos is the position of the token inside the  query, we do limit pos to context window, because the moment we surpass it the first token is forgotten.
+
+##### Key
+this simply represent the answer the query asks, so if a key is good enough for the query, it will result in a high match score(dot product between the key and query matrices will be high).
+
+##### Query
+the question the token asks it looks for the most appropriate key from all the previous tokens
+##### Value
+the value of the token itself
