@@ -3,9 +3,20 @@ The main difference between a transformer (decoder only) and sentence transforme
 The output is the thing where they deal with it differently.
 The [Sentence Transformer](#sentence-transfomer) need to output a percentage for the next token.
 The [Transformer](#transformer) need to give a vector that contains the meaning of the whole query.
+so the mains difference between the 2 is as follows:
+attention step:
+the sentence transformer -> nothing 
+the transformer -> takes the result of the self attentions step and apply a triangular mask thereby the resulting matrix will allow each token to look at the values of the previous tokens and itself.
+
+the output step:
+the sentence transformer -> apply a mean/average pooling to the result of the transformer block. by taking the average value of all tokens in each slice, resulting in a single vector containing the meaning of the entire sentence.
+the transformer -> takes the vector representing the last token from the result of the transformer block and dot product it with the transpose hidden wight matrix of shape [vocab size / model dimensions], the resulting vector is then softmaxed.
+we take the index of the max arg of the vector as our next token.
+
+
 
 ## Sentence Transformer
-For the sentence transformer  the output of the shared steps is passed into a pooling step.
+For the sentence transformer  the output of the transformer block is passed into a pooling step.
 There are many pooling methods like average pooling max pooling sum pooling and last token pooling. the others do not matter since they dominate other fields.
 What we care about and the one that is used in sentence transformers is [average/mean pooling](#average/mean-pooling)
 
@@ -18,4 +29,5 @@ When we divide by the length we do not count the padding as it will mess up with
 
 
 ## Transformer
-to my knowledge the output from the shared steps is multiplied by a single unembedding vector and then the output is softmaxed so the token with the highest value is the next token.
+we take the last layer of the result of the transformer block is  i.e vector representing the last token of the sequence.
+this is then dot-producted with a hidden weight matrix of shape [vocab_size / model dimension]. we take the resulting vector and soft max it and we get a probability vector where the index of the max value is the next token.
