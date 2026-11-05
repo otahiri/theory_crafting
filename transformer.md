@@ -21,7 +21,7 @@ This way we can apply self attention from 4 heads and later concatenate all 4 in
 However there is a good balance between too many heads and too little heads, this golden ration is that each head will have between 64 and 128 dimensions, each head will take a sequence and apply its own self attention to it.
 So the way this works is we get the result of the [embedding](#embedding) and multiply it with the matrices representing the key query and the value.
 We get 3 different matrices with shape of [model dimensions / len of query] we then divide each matrix on the head count,
-And apply [self attention](#self-attention) to each part and concatenate them, the result we then compute the dot product of that new matrix with the weights vector.
+And apply [self attention](#self-attention) to each part and concatenate them, the result we then compute the dot product of that new matrix with the weights matrix.
 This output is the sent to the [add/normalize](#add/normalize) layer.
 ### Feed Forward
 We calculate the dot product of the weight matrix with the input matrix, and add to it the bias vector, we then apply an activation function to the result,
